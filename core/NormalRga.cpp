@@ -1461,6 +1461,20 @@ int RgaBlit(rga_info *src, rga_info *dst, rga_info *src1) {
     if (src1)
         rgaReg.pat.rd_mode = src1->rd_mode ? src1->rd_mode : raster_mode;
 
+    /* rga3 is_10b_compact and is_10b_endian */
+    if (rgaReg.src.rd_mode == raster_mode) {
+        rgaReg.src.is_10b_compact = !!src->is_10b_compact;
+        rgaReg.src.is_10b_endian  = !!src->is_10b_endian;
+    }
+    if (rgaReg.dst.rd_mode == raster_mode || rgaReg.dst.rd_mode == tile_mode) {
+        rgaReg.dst.is_10b_compact = !!dst->is_10b_compact;
+        rgaReg.dst.is_10b_endian  = !!dst->is_10b_endian;
+    }
+    if (src1 && rgaReg.pat.rd_mode == raster_mode) {
+        rgaReg.pat.is_10b_compact = !!src1->is_10b_compact;
+        rgaReg.pat.is_10b_endian  = !!src1->is_10b_endian;
+    }
+
     rgaReg.in_fence_fd = dst->in_fence_fd;
     rgaReg.core = dst->core;
     rgaReg.priority = dst->priority;
