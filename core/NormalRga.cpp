@@ -679,6 +679,19 @@ int RgaBlit(rga_info *src, rga_info *dst, rga_info *src1) {
         ALOGD("dst: Fd/handle = %.2d , buf = %p, mmuFlag = %d, mmuType = %d\n", dstFd, dstBuf, dst->mmuFlag, dstType);
     }
 
+    /* rga3 fixup inverted RGB/BGR order in FBCE */
+    if (dst && dst->rd_mode == fbc_mode &&
+        rga_version_compare(ctx->mDriverVersion, (struct rga_version_t){ 1, 3, 9, {0} }) < 0) {
+        switch (relDstRect.format) {
+        case RK_FORMAT_RGBA_8888:
+            relDstRect.format = RK_FORMAT_BGRA_8888;
+            break;
+        case RK_FORMAT_BGRA_8888:
+            relDstRect.format = RK_FORMAT_RGBA_8888;
+            break;
+        }
+    }
+
     relSrcRect.format = RkRgaCompatibleFormat(relSrcRect.format);
     relDstRect.format = RkRgaCompatibleFormat(relDstRect.format);
     if (isRectValid(relSrc1Rect))
